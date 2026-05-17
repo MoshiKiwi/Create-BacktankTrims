@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
  * Standalone fix for Create issue #6213: Create's diving gear and backtanks cannot be trimmed,
@@ -27,7 +29,15 @@ public class CreateBacktankTrims {
 	public static final String MOD_ID = "createbacktanktrims";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public CreateBacktankTrims() {
+	public CreateBacktankTrims(IEventBus modEventBus) {
+		ModComponents.register(modEventBus);
+		ModRecipes.register(modEventBus);
+		modEventBus.addListener(this::commonSetup);
 		LOGGER.info("Create: Backtank Trims loaded - Create armor can now be trimmed.");
+	}
+
+	private void commonSetup(FMLCommonSetupEvent event) {
+		// Cauldron interaction maps are not thread-safe; register on the main thread.
+		event.enqueueWork(CauldronCleaning::register);
 	}
 }

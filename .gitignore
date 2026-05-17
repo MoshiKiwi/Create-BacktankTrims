@@ -22,3 +22,6 @@ eclipse/
 # OS
 .DS_Store
 Thumbs.db
+
+# Tooling
+.claude/

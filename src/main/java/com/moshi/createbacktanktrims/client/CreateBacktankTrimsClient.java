@@ -13,8 +13,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 /**
- * Registers {@link BacktankTrimLayer} onto every humanoid living-entity renderer (players and mobs),
- * mirroring how Create registers its own {@code BacktankArmorLayer}.
+ * Registers {@link BacktankTrimLayer} and {@link HelmetVisorLayer} onto every humanoid
+ * living-entity renderer (players and mobs), mirroring how Create registers its own
+ * {@code BacktankArmorLayer}.
  */
 @EventBusSubscriber(modid = CreateBacktankTrims.MOD_ID, value = Dist.CLIENT)
 public final class CreateBacktankTrimsClient {
@@ -43,5 +44,11 @@ public final class CreateBacktankTrimsClient {
 		HumanoidModel trimModel = new HumanoidModel<>(
 			event.getEntityModels().bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR));
 		livingRenderer.addLayer(new BacktankTrimLayer(livingRenderer, trimModel));
+
+		// The visor uses the same inner-armor model as the helmet; HelmetVisorLayer nudges
+		// it clear of the helmet surface with a small offset (see HelmetVisorLayer).
+		HumanoidModel visorModel = new HumanoidModel<>(
+			event.getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
+		livingRenderer.addLayer(new HelmetVisorLayer(livingRenderer, visorModel));
 	}
 }
