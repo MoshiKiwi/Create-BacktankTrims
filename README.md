@@ -2,9 +2,9 @@
 
 A small standalone [NeoForge](https://neoforged.net/) mod that lets you apply **armor trims**
 to [Create](https://modrinth.com/mod/create)'s diving gear and backtanks in a smithing table —
-and makes those trims actually render on the worn equipment.
+and makes those trims actually render on the worn equipment!
 
-Fixes [Create issue #6213](https://github.com/Creators-of-Create/Create/issues/6213).
+I got annoyed after the [Create issue #6213](https://github.com/Creators-of-Create/Create/issues/6213) never got fixed, and just did it myself.
 
 ## The problem
 
@@ -12,7 +12,7 @@ Create's copper/netherite diving helmets, diving boots and backtanks are armor, 
 explicitly opts them out of the `minecraft:trimmable_armor` tag. As a result:
 
 - the smithing table refuses to trim them, and
-- even if a trim is forced onto them (NBT editors, Almost Unified, …), the trim never renders.
+- even if a trim is forced onto them (Applied before conversion, NBT editors, Almost Unified, …), the trim never renders.
 
 ## What this mod does
 
@@ -45,29 +45,12 @@ renders correctly on the worn backtank.
 - Create **6.0.0** or newer
 
 This is a client + server mod. Install it on both sides of a multiplayer setup.
+(client for the renderer, server for the crafting recipe)
+
 
 ## Installation
 
-Drop the jar into your `mods/` folder alongside Create. No configuration needed.
-
-## Building from source
-
-The project builds against NeoForge only — it has no compile-time dependency on Create
-(the netherite backtank is matched by registry id at runtime).
-
-> **Java 21 is required.** Gradle 8.14 cannot run on Java 22+. If your system JDK is newer,
-> point `JAVA_HOME` at a JDK 21 before building.
-
-```bash
-# macOS / Linux
-./gradlew build
-
-# Windows (PowerShell), if your system JDK is newer than 21:
-$env:JAVA_HOME = "C:\path\to\jdk-21"
-.\gradlew.bat build
-```
-
-The built mod jar lands in `build/libs/createbacktanktrims-1.0.0.jar`.
+On Modrinth, just hit "install" ! If you're not using Modrinth, just drop the jar into your `mods/` folder alongside Create. No configuration needed.
 
 ## License
 
