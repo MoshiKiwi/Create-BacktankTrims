@@ -1,31 +1,37 @@
 # Create: Backtank Trims
 
-A small standalone [NeoForge](https://neoforged.net/) mod that lets you apply **armor trims**
-to [Create](https://modrinth.com/mod/create)'s diving gear and backtanks in a smithing table —
-and makes those trims actually render on the worn equipment!
+A small standalone [NeoForge](https://neoforged.net/) mod for
+[Create](https://modrinth.com/mod/create)'s diving gear. It does two things:
 
-I got annoyed after the [Create issue #6213](https://github.com/Creators-of-Create/Create/issues/6213) never got fixed, and just did it myself.
+- **Armor trims** — re-enables smithing-table trims on Create's diving helmets, diving
+  boots and backtanks, and makes them render on the worn equipment.
+- **Dyeable visors** — lets you recolour the eye-visor of the diving helmets, with an
+  optional slow pulsing effect.
 
-## The problem
+I got annoyed after [Create issue #6213](https://github.com/Creators-of-Create/Create/issues/6213)
+never got fixed, and just did it myself.
+
+## Armor trims
+
+### The problem
 
 Create's copper/netherite diving helmets, diving boots and backtanks are armor, but Create
 explicitly opts them out of the `minecraft:trimmable_armor` tag. As a result:
 
 - the smithing table refuses to trim them, and
-- even if a trim is forced onto them (Applied before conversion, NBT editors, Almost Unified, …), the trim never renders.
+- even if a trim is forced onto them (applied before conversion, NBT editors, Almost
+  Unified, …), the trim never renders.
 
-## What this mod does
+### What the mod does
 
-- **Re-enables trimming** for all six pieces by re-adding them to the `trimmable_armor` tag.
-  The mod loads *after* Create, so this addition wins over Create's removal.
+- **Re-enables trimming** for all six pieces by re-adding them to the `trimmable_armor`
+  tag. The mod loads *after* Create, so this addition wins over Create's removal.
 - **Renders the trim on the netherite backtank.** The five other pieces render through
   vanilla's armor layer, so their trims appear automatically once trimmable. The netherite
   backtank is drawn by Create's own custom renderer, which skips the vanilla trim pass — so
   the mod adds a dedicated render layer that draws the trim decal over the diving suit.
 - **Adds inventory trim icons** for the four flat diving items (helmets and boots), so a
   trimmed piece shows its trim overlay in inventories and tooltips.
-
-### Covered pieces
 
 | Item | Smithing table | Worn trim | Inventory icon |
 |------|:---:|:---:|:---:|
@@ -38,6 +44,21 @@ explicitly opts them out of the `minecraft:trimmable_armor` tag. As a result:
 3D block model, which vanilla's flat trim-overlay system cannot decorate. The trim still
 renders correctly on the worn backtank.
 
+## Dyeable visors
+
+The copper and netherite diving helmets have a coloured band (a "visor") around the eyes.
+This mod lets you recolour just that visor, leaving the metal of the helmet untouched.
+
+- **Dye it** like leather armor: put a diving helmet and any dye(s) together in a crafting
+  grid. Mix several dyes for blended colours.
+- **Make it pulse** by crafting a dyed helmet together with an **amethyst shard**. The
+  visor then slowly breathes through lighter and darker shades of its colour, and a
+  *Pulsating* line appears in the tooltip.
+- **Wash it clean** by right-clicking a water cauldron while holding the helmet. That
+  removes the dye and the pulse.
+
+Dyeing affects the worn helmet's visor only; the flat inventory sprite is unchanged.
+
 ## Requirements
 
 - Minecraft **1.21.1**
@@ -45,12 +66,11 @@ renders correctly on the worn backtank.
 - Create **6.0.0** or newer
 
 This is a client + server mod. Install it on both sides of a multiplayer setup.
-(client for the renderer, server for the crafting recipe)
-
 
 ## Installation
 
-On Modrinth, just hit "install" ! If you're not using Modrinth, just drop the jar into your `mods/` folder alongside Create. No configuration needed.
+On Modrinth, just hit "Install". Otherwise, drop the jar into your `mods/` folder alongside
+Create. No configuration needed.
 
 ## License
 

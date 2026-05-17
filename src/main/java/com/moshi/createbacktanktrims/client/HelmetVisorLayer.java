@@ -63,7 +63,7 @@ public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> 
 	// copy the values you like back here as the new defaults.
 	// ---------------------------------------------------------------------------------------
 	public static volatile float visorOffsetX = 0.0F;
-	public static volatile float visorOffsetY = 0.021F;
+	public static volatile float visorOffsetY = 0.0275F;
 	public static volatile float visorOffsetZ = -0.00035F;
 	/** Uniform scale applied to the visor model. 1.0 = helmet-sized. */
 	public static volatile float visorScale = 1.11F;
