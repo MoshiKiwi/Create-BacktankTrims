@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+
+# NeoForge / ModDevGradle generated run directories
+run/
+runs/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+out/
+eclipse/
+
+# OS
+.DS_Store
+Thumbs.db

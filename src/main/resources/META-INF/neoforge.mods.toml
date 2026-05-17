@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/Creators-of-Create/Create/issues/6213"
+
+[[mods]]
+modId = "createbacktanktrims"
+version = "1.0.0"
+displayName = "Create: Backtank Trims"
+authors = "Moshi"
+description = '''
+Re-enables smithing-table armor trims for Create's diving helmets, diving boots and backtanks, and renders the trims correctly on the worn equipment. Fixes Create issue #6213.'''
+
+# NeoForge itself.
+[[dependencies.createbacktanktrims]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.createbacktanktrims]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+# Must load AFTER Create so our trimmable_armor tag additions override Create's removals.
+[[dependencies.createbacktanktrims]]
+modId = "create"
+type = "required"
+versionRange = "[6.0.0,)"
+ordering = "AFTER"
+side = "BOTH"

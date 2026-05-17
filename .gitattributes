@@ -1,0 +1,13 @@
+# Normalize all text files to LF in the repository
+* text=auto eol=lf
+
+# Windows batch scripts must keep CRLF
+*.bat text eol=crlf
+
+# The Gradle wrapper is a POSIX shell script — must stay LF
+gradlew text eol=lf
+
+# Binary assets
+*.jar binary
+*.png binary
+*.ogg binary
