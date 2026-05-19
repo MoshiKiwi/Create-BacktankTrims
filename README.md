@@ -33,14 +33,13 @@ explicitly opts them out of the `minecraft:trimmable_armor` tag. As a result:
 - **Adds inventory trim icons** for the four flat diving items (helmets and boots), so a
   trimmed piece shows its trim overlay in inventories and tooltips.
 
-| Item | Smithing table | Worn trim | Inventory icon |
-|------|:---:|:---:|:---:|
+| Item                             | Smithing table | Worn trim | Inventory icon |
+|----------------------------------|:---:|:---:|:---:|
 | Copper / Netherite Diving Helmet | ✅ | ✅ | ✅ |
 | Copper / Netherite Diving Boots  | ✅ | ✅ | ✅ |
-| Copper Backtank                  | ✅ | ✅ | ✅ |
-| Netherite Backtank               | ✅ | ✅ | ⚠️ |
+| Backtanks                        | ✅ | ✅ | ⚠️ |
 
-⚠️ The netherite backtank's *inventory icon* does not show a trim overlay — backtanks use a
+⚠️ The backtank's *inventory icon* does not show a trim overlay — backtanks use a
 3D block model, which vanilla's flat trim-overlay system cannot decorate. The trim still
 renders correctly on the worn backtank.
 
