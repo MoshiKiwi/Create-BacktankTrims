@@ -74,5 +74,5 @@ Create. No configuration needed.
 
 ## License
 
-[MIT](LICENSE). Create is a separate project with its own license; this mod only depends on
+[Apache 2.0](LICENSE). Create is a separate project with its own license; this mod only depends on
 it at runtime.
