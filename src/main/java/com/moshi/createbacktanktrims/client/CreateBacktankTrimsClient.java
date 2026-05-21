@@ -6,31 +6,37 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 /**
  * Registers {@link BacktankTrimLayer} and {@link HelmetVisorLayer} onto every humanoid
  * living-entity renderer (players and mobs), mirroring how Create registers its own
  * {@code BacktankArmorLayer}.
  */
-@EventBusSubscriber(modid = CreateBacktankTrims.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = CreateBacktankTrims.MOD_ID,
+	bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class CreateBacktankTrimsClient {
 
 	private CreateBacktankTrimsClient() {}
 
 	@SubscribeEvent
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	static void onAddLayers(EntityRenderersEvent.AddLayers event) {
 		// Player renderers (one per skin model: "default" and "slim").
-		for (var skin : event.getSkins()) {
+		for (String skin : event.getSkins()) {
 			addLayer(event.getSkin(skin), event);
 		}
 		// Every other living entity renderer (zombies, skeletons, armor stands, ...).
-		for (EntityType<?> type : event.getEntityTypes()) {
-			addLayer(event.getRenderer(type), event);
+		// Forge 1.20.1's AddLayers has no getEntityTypes(), so we walk the entity registry.
+		// getRenderer is generically bound to LivingEntity, hence the raw type; it returns
+		// null for non-living entities, which addLayer ignores.
+		for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+			addLayer(event.getRenderer((EntityType) type), event);
 		}
 	}
 

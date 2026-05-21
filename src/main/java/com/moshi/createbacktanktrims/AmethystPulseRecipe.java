@@ -1,33 +1,34 @@
 package com.moshi.createbacktanktrims;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 /**
  * Special crafting recipe: a diving helmet plus an amethyst shard yields the same helmet — with
- * every component it already carried (dye colour, armor trim, ...) preserved — and the
- * {@link ModComponents#AMETHYST_PULSE} component added so its visor pulses.
+ * every bit of NBT it already carried (visor colour, armor trim, ...) preserved — and the
+ * {@link HelmetData} pulse flag set so its visor pulses.
  *
  * <p>It must be a special recipe because a plain shapeless recipe produces a fixed result and
- * cannot copy the input helmet's existing components onto the output.
+ * cannot copy the input helmet's existing NBT onto the output.
  */
 public class AmethystPulseRecipe extends CustomRecipe {
 
-	public AmethystPulseRecipe(CraftingBookCategory category) {
-		super(category);
+	public AmethystPulseRecipe(ResourceLocation id, CraftingBookCategory category) {
+		super(id, category);
 	}
 
 	@Override
-	public boolean matches(CraftingInput input, Level level) {
+	public boolean matches(CraftingContainer input, Level level) {
 		ItemStack helmet = ItemStack.EMPTY;
 		boolean foundShard = false;
-		for (int i = 0; i < input.size(); i++) {
+		for (int i = 0; i < input.getContainerSize(); i++) {
 			ItemStack stack = input.getItem(i);
 			if (stack.isEmpty())
 				continue;
@@ -43,16 +44,16 @@ public class AmethystPulseRecipe extends CustomRecipe {
 				return false; // any other item disqualifies the grid
 			}
 		}
-		return foundShard && !helmet.isEmpty() && !helmet.has(ModComponents.AMETHYST_PULSE.get());
+		return foundShard && !helmet.isEmpty() && !HelmetData.isPulsing(helmet);
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-		for (int i = 0; i < input.size(); i++) {
+	public ItemStack assemble(CraftingContainer input, RegistryAccess registries) {
+		for (int i = 0; i < input.getContainerSize(); i++) {
 			ItemStack stack = input.getItem(i);
 			if (DivingHelmets.isDivingHelmet(stack)) {
-				ItemStack result = stack.copyWithCount(1); // keeps dye, trim, everything
-				result.set(ModComponents.AMETHYST_PULSE.get(), Boolean.TRUE);
+				ItemStack result = stack.copyWithCount(1); // keeps visor colour, trim, everything
+				HelmetData.setPulsing(result, true);
 				return result;
 			}
 		}
@@ -62,6 +63,11 @@ public class AmethystPulseRecipe extends CustomRecipe {
 	@Override
 	public boolean canCraftInDimensions(int width, int height) {
 		return width * height >= 2;
+	}
+
+	@Override
+	public ItemStack getResultItem(RegistryAccess registries) {
+		return ItemStack.EMPTY;
 	}
 
 	@Override

@@ -13,7 +13,6 @@ import com.mojang.blaze3d.vertex.VertexSorting;
 
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -97,12 +96,12 @@ public final class IconCapture {
 		pose.rotateY((float) Math.toRadians(YAW_DEGREES));
 		Quaternionf cameraOrientation = new Quaternionf().rotateX((float) Math.toRadians(PITCH_DEGREES));
 
-		// Translation lifts the entity so its body centre sits at the target screen point.
-		Vector3f translation = new Vector3f(0.0F, stand.getBbHeight() / 2.0F, 0.0F);
-
 		GuiGraphics gui = new GuiGraphics(mc, mc.renderBuffers().bufferSource());
+		// 1.20.1's renderEntityInInventory has no translation parameter (that was added in
+		// 1.20.2), so the stand is centred on (x, y) directly; the vertical framing may want
+		// re-tuning via /cbticon compared with the 1.21 build.
 		InventoryScreen.renderEntityInInventory(
-			gui, SIZE / 2.0F, SIZE * 0.5F, ENTITY_SCALE, translation, pose, cameraOrientation, stand);
+			gui, SIZE / 2, SIZE / 2, (int) ENTITY_SCALE, pose, cameraOrientation, stand);
 		gui.flush();
 
 		RenderSystem.restoreProjectionMatrix();

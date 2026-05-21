@@ -1,6 +1,6 @@
 # Create: Backtank Trims
 
-A small standalone [NeoForge](https://neoforged.net/) mod for
+A small standalone [Forge](https://files.minecraftforge.net/) mod for
 [Create](https://modrinth.com/mod/create)'s diving gear. It does two things:
 
 - **Armor trims** — re-enables smithing-table trims on Create's diving helmets, diving
@@ -60,8 +60,8 @@ Dyeing affects the worn helmet's visor only; the flat inventory sprite is unchan
 
 ## Requirements
 
-- Minecraft **1.21.1**
-- NeoForge **21.1.0** or newer
+- Minecraft **1.20.1**
+- Forge **47.0.0** or newer — or NeoForge for 1.20.1, which loads the same jar
 - Create **6.0.0** or newer
 
 This is a client + server mod. Install it on both sides of a multiplayer setup.

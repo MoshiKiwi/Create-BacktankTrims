@@ -2,7 +2,7 @@ package com.moshi.createbacktanktrims.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.moshi.createbacktanktrims.ModComponents;
+import com.moshi.createbacktanktrims.HelmetData;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -14,16 +14,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.DyedItemColor;
 
 /**
  * Recolours the eye-visor of Create's copper and netherite diving helmets to the helmet's dye
@@ -34,7 +31,7 @@ import net.minecraft.world.item.component.DyedItemColor;
  * the helmet UV exactly. Each mask holds only the visor pixels, desaturated to greyscale; rendering
  * the head model with that mask and the dye colour as a tint produces the recoloured visor.
  *
- * <p>The layer does nothing until the helmet carries a {@code minecraft:dyed_color} component, so
+ * <p>The layer does nothing until the helmet carries a visor colour (see {@link HelmetData}), so
  * an undyed helmet keeps Create's original visor colour. When dyed, the mask is fully opaque over
  * the visor region and therefore hides the original colour underneath.
  *
@@ -45,15 +42,15 @@ import net.minecraft.world.item.component.DyedItemColor;
 public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
 	private static final ResourceLocation COPPER_HELMET_ID =
-		ResourceLocation.fromNamespaceAndPath("create", "copper_diving_helmet");
+		new ResourceLocation("create", "copper_diving_helmet");
 	private static final ResourceLocation NETHERITE_HELMET_ID =
-		ResourceLocation.fromNamespaceAndPath("create", "netherite_diving_helmet");
+		new ResourceLocation("create", "netherite_diving_helmet");
 
 	private static final ResourceLocation COPPER_VISOR_TEXTURE =
-		ResourceLocation.fromNamespaceAndPath("createbacktanktrims",
+		new ResourceLocation("createbacktanktrims",
 			"textures/models/armor/copper_diving_helmet_visor.png");
 	private static final ResourceLocation NETHERITE_VISOR_TEXTURE =
-		ResourceLocation.fromNamespaceAndPath("createbacktanktrims",
+		new ResourceLocation("createbacktanktrims",
 			"textures/models/armor/netherite_diving_helmet_visor.png");
 
 	// ---------------------------------------------------------------------------------------
@@ -97,8 +94,7 @@ public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> 
 
 		// Only override the visor once the helmet has actually been dyed; an undyed helmet
 		// keeps Create's original visor colour.
-		DyedItemColor dyed = stack.get(DataComponents.DYED_COLOR);
-		if (dyed == null)
+		if (!HelmetData.hasVisorColor(stack))
 			return;
 
 		if (!(getParentModel() instanceof HumanoidModel<?> parentModel))
@@ -110,12 +106,15 @@ public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> 
 
 		VertexConsumer vc = buffer.getBuffer(RenderType.armorCutoutNoCull(visorTexture));
 		// Greyscale mask * colour = the recoloured visor, drawn opaque over the original.
-		int color = dyed.rgb() & 0xFFFFFF;
-		if (stack.has(ModComponents.AMETHYST_PULSE.get())) {
+		int color = HelmetData.getVisorColor(stack) & 0xFFFFFF;
+		if (HelmetData.isPulsing(stack)) {
 			// Amethyst-crafted helmets pulse; one renamed "jeb_" rainbow-cycles instead.
 			color = isJebNamed(stack) ? rainbowColor(ageInTicks) : pulseColor(color, ageInTicks);
 		}
-		int argb = 0xFF000000 | color;
+		// 1.20.1's renderToBuffer takes float r/g/b/a rather than a packed ARGB int.
+		float r = ((color >> 16) & 0xFF) / 255.0F;
+		float g = ((color >> 8) & 0xFF) / 255.0F;
+		float b = (color & 0xFF) / 255.0F;
 
 		// Rotate the offset into the head's own frame, using the head part's posed rotation
 		// (which already accounts for players looking around and armor-stand head poses), so
@@ -137,7 +136,7 @@ public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> 
 		ms.translate(px, py, pz);
 		ms.scale(visorScale, visorScale, visorScale); // scale around the head pivot
 		ms.translate(-px, -py, -pz);
-		visorModel.renderToBuffer(ms, vc, light, OverlayTexture.NO_OVERLAY, argb);
+		visorModel.renderToBuffer(ms, vc, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
 		ms.popPose();
 	}
 
@@ -188,7 +187,6 @@ public class HelmetVisorLayer<T extends LivingEntity, M extends EntityModel<T>> 
 	}
 
 	private static boolean isJebNamed(ItemStack stack) {
-		Component name = stack.get(DataComponents.CUSTOM_NAME);
-		return name != null && "jeb_".equals(name.getString());
+		return stack.hasCustomHoverName() && "jeb_".equals(stack.getHoverName().getString());
 	}
 }

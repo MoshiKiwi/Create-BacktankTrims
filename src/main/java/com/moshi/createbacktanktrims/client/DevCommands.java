@@ -11,11 +11,11 @@ import net.minecraft.core.Rotations;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 /**
  * Registers the dev-only client commands. All are registered only outside production (i.e. in
@@ -29,7 +29,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
  *       checking that the visor tracks the head when it looks up or down.</li>
  * </ul>
  */
-@EventBusSubscriber(modid = CreateBacktankTrims.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = CreateBacktankTrims.MOD_ID, value = Dist.CLIENT)
 public final class DevCommands {
 
 	/** The custom name the target armor stand must carry for {@code /cbticon} to find it. */

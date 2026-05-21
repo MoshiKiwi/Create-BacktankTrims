@@ -8,9 +8,9 @@ import net.minecraft.world.item.ItemStack;
 public final class DivingHelmets {
 
 	public static final ResourceLocation COPPER =
-		ResourceLocation.fromNamespaceAndPath("create", "copper_diving_helmet");
+		new ResourceLocation("create", "copper_diving_helmet");
 	public static final ResourceLocation NETHERITE =
-		ResourceLocation.fromNamespaceAndPath("create", "netherite_diving_helmet");
+		new ResourceLocation("create", "netherite_diving_helmet");
 
 	private DivingHelmets() {}
 

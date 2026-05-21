@@ -1,5 +1,7 @@
 package com.moshi.createbacktanktrims.client;
 
+import java.util.Optional;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -12,7 +14,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -36,7 +37,7 @@ import net.minecraft.world.item.armortrim.ArmorTrim;
 public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
 	private static final ResourceLocation NETHERITE_BACKTANK_ID =
-		ResourceLocation.fromNamespaceAndPath("create", "netherite_backtank");
+		new ResourceLocation("create", "netherite_backtank");
 
 	/** A freshly baked outer-armor model used purely to stamp the trim decal. */
 	private final HumanoidModel<T> trimModel;
@@ -57,9 +58,11 @@ public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>>
 		if (!isNetheriteBacktank(stack))
 			return;
 
-		ArmorTrim trim = stack.get(DataComponents.TRIM);
-		if (trim == null)
+		// 1.20.1 stores the trim in item NBT, read back through ArmorTrim#getTrim.
+		Optional<ArmorTrim> trimOpt = ArmorTrim.getTrim(entity.level().registryAccess(), stack);
+		if (trimOpt.isEmpty())
 			return;
+		ArmorTrim trim = trimOpt.get();
 
 		if (!(getParentModel() instanceof HumanoidModel<?> parentModel))
 			return;
@@ -69,16 +72,15 @@ public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>>
 		setChestVisibility(trimModel);
 
 		// The netherite backtank uses the vanilla netherite armor material, so the standard
-		// (non-cardboard) trim textures from the vanilla armor_trims atlas apply.
+		// trim textures from the vanilla armor_trims atlas apply.
 		ResourceLocation textureLoc = trim.outerTexture(ArmorMaterials.NETHERITE);
 		TextureAtlasSprite sprite = Minecraft.getInstance()
 			.getModelManager()
 			.getAtlas(Sheets.ARMOR_TRIMS_SHEET)
 			.getSprite(textureLoc);
 
-		VertexConsumer vc = sprite.wrap(
-			buffer.getBuffer(Sheets.armorTrimsSheet(trim.pattern().value().decal())));
-		trimModel.renderToBuffer(ms, vc, light, OverlayTexture.NO_OVERLAY);
+		VertexConsumer vc = sprite.wrap(buffer.getBuffer(Sheets.armorTrimsSheet()));
+		trimModel.renderToBuffer(ms, vc, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private static boolean isNetheriteBacktank(ItemStack stack) {
