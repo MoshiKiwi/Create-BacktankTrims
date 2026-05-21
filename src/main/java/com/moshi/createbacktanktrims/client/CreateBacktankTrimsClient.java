@@ -1,12 +1,14 @@
 package com.moshi.createbacktanktrims.client;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import com.moshi.createbacktanktrims.CreateBacktankTrims;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -25,18 +27,34 @@ public final class CreateBacktankTrimsClient {
 	private CreateBacktankTrimsClient() {}
 
 	@SubscribeEvent
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	static void onAddLayers(EntityRenderersEvent.AddLayers event) {
 		// Player renderers (one per skin model: "default" and "slim").
 		for (String skin : event.getSkins()) {
 			addLayer(event.getSkin(skin), event);
 		}
-		// Every other living entity renderer (zombies, skeletons, armor stands, ...).
-		// Forge 1.20.1's AddLayers has no getEntityTypes(), so we walk the entity registry.
-		// getRenderer is generically bound to LivingEntity, hence the raw type; it returns
-		// null for non-living entities, which addLayer ignores.
-		for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
-			addLayer(event.getRenderer((EntityType) type), event);
+		// Every other entity renderer (zombies, skeletons, armor stands, ...).
+		// Forge 1.20.1's AddLayers exposes no entity-type list, and event.getRenderer(EntityType)
+		// casts unconditionally to LivingEntityRenderer — it throws ClassCastException for any
+		// non-living entity (e.g. a NoopRenderer). So read the event's own renderer map and let
+		// addLayer filter out the renderers we don't care about.
+		for (EntityRenderer<?> renderer : entityRenderers(event).values()) {
+			addLayer(renderer, event);
+		}
+	}
+
+	/**
+	 * The {@code AddLayers} entity-renderer map, which Forge 1.20.1 keeps private. Reflective
+	 * access is stable here: {@code EntityRenderersEvent} is one of Forge's own classes and is
+	 * not obfuscated, so the field is named {@code renderers} in both dev and production.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map<EntityType<?>, EntityRenderer<?>> entityRenderers(EntityRenderersEvent.AddLayers event) {
+		try {
+			Field field = EntityRenderersEvent.AddLayers.class.getDeclaredField("renderers");
+			field.setAccessible(true);
+			return (Map<EntityType<?>, EntityRenderer<?>>) field.get(event);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException("Cannot read EntityRenderersEvent.AddLayers#renderers", e);
 		}
 	}
 

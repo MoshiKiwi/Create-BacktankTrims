@@ -5,13 +5,13 @@ issueTrackerURL = "https://github.com/Creators-of-Create/Create/issues/6213"
 
 [[mods]]
 modId = "createbacktanktrims"
-version = "1.1.0"
+version = "1.1.1"
 displayName = "Create: Backtank Trims"
 authors = "Moshi"
 description = '''
 Re-enables smithing-table armor trims for Create's diving helmets, diving boots and backtanks, and renders the trims correctly on the worn equipment. Fixes Create issue #6213.'''
 
-# Forge itself. NeoForge 1.20.1 also satisfies this dependency, so the same jar runs on both.
+# Forge itself.
 [[dependencies.createbacktanktrims]]
 modId = "forge"
 mandatory = true

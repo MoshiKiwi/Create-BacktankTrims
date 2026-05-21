@@ -2,9 +2,8 @@
 .gradle/
 build/
 
-# NeoForge / ModDevGradle generated run directories
+# ForgeGradle generated run directory
 run/
-runs/
 
 # IDE
 .idea/

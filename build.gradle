@@ -9,7 +9,7 @@ plugins {
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-version = '1.1.0'
+version = '1.1.1'
 group = 'com.moshi.createbacktanktrims'
 
 base {
@@ -30,6 +30,13 @@ minecraft {
         client {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
+            // Create/Ponder/Flywheel ship Mixin refmaps that still hold SRG names (m_5741_, …);
+            // ForgeGradle does not remap those dependency refmaps into this Parchment-mapped
+            // workspace, so Mixin looks up members that don't exist on the named dev classes
+            // and crashes on load (e.g. Ponder's WindowResizeMixin -> Minecraft.resizeDisplay).
+            // Disabling the refmap makes Mixin use the annotation names directly, which already
+            // match the named workspace. Dev-run only — the published jar keeps its own refmap.
+            property 'mixin.env.disableRefMap', 'true'
             mods {
                 createbacktanktrims {
                     source sourceSets.main
