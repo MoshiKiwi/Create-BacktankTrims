@@ -30,6 +30,9 @@ explicitly opts them out of the `minecraft:trimmable_armor` tag. As a result:
   vanilla's armor layer, so their trims appear automatically once trimmable. The netherite
   backtank is drawn by Create's own custom renderer, which skips the vanilla trim pass — so
   the mod adds a dedicated render layer that draws the trim decal over the diving suit.
+  The same layer also covers add-on chestpieces that reuse Create's `LayeredArmorItem`
+  path; currently that means the [create_jetpack](https://modrinth.com/mod/create-jetpack)
+  mod's netherite jetpack.
 - **Adds inventory trim icons** for the four flat diving items (helmets and boots), so a
   trimmed piece shows its trim overlay in inventories and tooltips.
 
