@@ -3,8 +3,10 @@
     "create:copper_diving_helmet",
     "create:copper_diving_boots",
     "create:copper_backtank",
+    { "id": "create_jetpack:jetpack",           "required": false },
     "create:netherite_diving_helmet",
     "create:netherite_diving_boots",
-    "create:netherite_backtank"
+    "create:netherite_backtank",
+    { "id": "create_jetpack:netherite_jetpack", "required": false }
   ]
 }
