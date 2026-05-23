@@ -1,5 +1,7 @@
 package com.moshi.createbacktanktrims.client;
 
+import java.util.Set;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -18,25 +20,28 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 
 /**
- * Renders an armor trim for the Create netherite backtank.
+ * Renders an armor trim for chestpieces that go through Create's custom layered-armor renderer.
  *
  * <p>Create's plain armor pieces (diving helmet, diving boots, copper backtank) render through the
  * vanilla {@code HumanoidArmorLayer}, so vanilla draws their trims automatically once the items are
- * trimmable again. The netherite backtank however is a {@code BacktankItem.Layered} and is drawn by
- * Create's custom {@code LayeredArmorItem#renderArmorPiece}, which cancels the vanilla path and
- * never performs the trim pass. This layer reproduces that missing pass.
+ * trimmable again. The netherite backtank — and Create-compatible add-ons like the create_jetpack
+ * mod's netherite jetpack — are {@code BacktankItem.Layered} / {@code LayeredArmorItem}s drawn by
+ * Create's custom {@code renderArmorPiece}, which cancels the vanilla path and never performs the
+ * trim pass. This layer reproduces that missing pass.
  *
- * <p>The backtank is matched by registry id so this mod needs no compile-time dependency on Create.
+ * <p>Items are matched by registry id so this mod needs no compile-time dependency on Create.
  */
 public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
-	private static final ResourceLocation NETHERITE_BACKTANK_ID =
-		ResourceLocation.fromNamespaceAndPath("create", "netherite_backtank");
+	/** Registry ids of chestpieces rendered through Create's {@code LayeredArmorItem} path. */
+	private static final Set<ResourceLocation> LAYERED_ARMOR_IDS = Set.of(
+		ResourceLocation.fromNamespaceAndPath("create", "netherite_backtank"),
+		ResourceLocation.fromNamespaceAndPath("create_jetpack", "netherite_jetpack"));
 
 	/** A freshly baked outer-armor model used purely to stamp the trim decal. */
 	private final HumanoidModel<T> trimModel;
@@ -54,7 +59,7 @@ public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>>
 			return;
 
 		ItemStack stack = entity.getItemBySlot(EquipmentSlot.CHEST);
-		if (!isNetheriteBacktank(stack))
+		if (!isLayeredCreateArmor(stack) || !(stack.getItem() instanceof ArmorItem armorItem))
 			return;
 
 		ArmorTrim trim = stack.get(DataComponents.TRIM);
@@ -68,9 +73,9 @@ public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>>
 		copyProperties(parentModel, trimModel);
 		setChestVisibility(trimModel);
 
-		// The netherite backtank uses the vanilla netherite armor material, so the standard
-		// (non-cardboard) trim textures from the vanilla armor_trims atlas apply.
-		ResourceLocation textureLoc = trim.outerTexture(ArmorMaterials.NETHERITE);
+		// Read the armor material from the item itself so this works for any Create-compatible
+		// layered armor regardless of which vanilla material it borrows (netherite, iron, ...).
+		ResourceLocation textureLoc = trim.outerTexture(armorItem.getMaterial());
 		TextureAtlasSprite sprite = Minecraft.getInstance()
 			.getModelManager()
 			.getAtlas(Sheets.ARMOR_TRIMS_SHEET)
@@ -81,9 +86,9 @@ public class BacktankTrimLayer<T extends LivingEntity, M extends EntityModel<T>>
 		trimModel.renderToBuffer(ms, vc, light, OverlayTexture.NO_OVERLAY);
 	}
 
-	private static boolean isNetheriteBacktank(ItemStack stack) {
+	private static boolean isLayeredCreateArmor(ItemStack stack) {
 		return !stack.isEmpty()
-			&& NETHERITE_BACKTANK_ID.equals(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+			&& LAYERED_ARMOR_IDS.contains(BuiltInRegistries.ITEM.getKey(stack.getItem()));
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
